@@ -11,6 +11,7 @@ type OrderService interface {
 	GetOrders(c *fiber.Ctx) (model.Order, error)
 	AddNewOrder(c *fiber.Ctx) (*mongo.UpdateResult, error)
 	RemoveOneOrder(c *fiber.Ctx) (*mongo.UpdateResult, error)
+	DeleteOneOrder(c *fiber.Ctx) (*mongo.DeleteResult, error)
 }
 type OrderController struct {
 	OrderServices OrderService
@@ -47,5 +48,14 @@ func (o OrderController) RemoveOneOrder(c *fiber.Ctx) error {
 
 	}
 	return c.Status(fiber.StatusCreated).JSON(updatedOrder)
+
+}
+func (o OrderController) DeleteOneOrder(c *fiber.Ctx) error {
+	deleteOneOrder, err := o.OrderServices.DeleteOneOrder(c)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString(err.Error())
+
+	}
+	return c.Status(fiber.StatusOK).JSON(deleteOneOrder)
 
 }

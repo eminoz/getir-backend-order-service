@@ -34,8 +34,10 @@ func (repo OrderRepo) RemoveOneOrder(filter primitive.D, update primitive.D, c *
 	return updatedOrder, nil
 }
 
-//update order
-/*func (repo OrderRepo) UpdateOrder(filter primitive.D, update primitive.D, c *fiber.Ctx) *mongo.SingleResult {
-	updatedOrder := repo.collection.FindOneAndUpdate(c.Context(), filter, update)
-	return updatedOrder
-}*/
+func (repo OrderRepo) DeleteOneOrder(c *fiber.Ctx, userID primitive.D) (*mongo.DeleteResult, error) {
+	result, err := repo.collection.DeleteOne(c.Context(), userID)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

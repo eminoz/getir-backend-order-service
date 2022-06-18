@@ -7,13 +7,13 @@ type Order struct {
 }
 
 type Product struct {
-	ID          string `bson:"_id"`
-	Name        string `bson:"name"`
-	Description string `bson:"description"`
-	Type        string `bson:"type"`
-	Unit        int32  `bson:"unit"`
-	Price       int32  `bson:"price"`
-	Supplier    string `bson:"supplier"`
+	ID          string  `bson:"_id"`
+	Name        string  `bson:"name"`
+	Description string  `bson:"description"`
+	Type        string  `bson:"type"`
+	Unit        float32 `bson:"unit"`
+	Price       int32   `bson:"price"`
+	Supplier    string  `bson:"supplier"`
 }
 
 type RemoveOneOrder struct {

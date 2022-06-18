@@ -13,9 +13,9 @@ import (
 type OrderRepository interface {
 	CreateNewOrder(order *model.Order, c *fiber.Ctx) (*mongo.InsertOneResult, error)
 	GetOrders(userOrders primitive.D, c *fiber.Ctx) *mongo.SingleResult
-	//UpdateOrder(filter primitive.D, update primitive.D, c *fiber.Ctx) *mongo.SingleResult
 	AddNewOrder(filter primitive.D, update primitive.D, c *fiber.Ctx) (*mongo.UpdateResult, error)
 	RemoveOneOrder(filter primitive.D, update primitive.D, c *fiber.Ctx) (*mongo.UpdateResult, error)
+	DeleteOneOrder(c *fiber.Ctx, userID primitive.D) (*mongo.DeleteResult, error)
 }
 type OrderService struct {
 	OrderRepo OrderRepository
@@ -94,4 +94,27 @@ func (repo OrderService) RemoveOneOrder(c *fiber.Ctx) (*mongo.UpdateResult, erro
 		return nil, err
 	}
 	return updateOrder, nil
+}
+func (repo OrderService) DeleteOneOrder(c *fiber.Ctx) (*mongo.DeleteResult, error) {
+	employeeID, err := primitive.ObjectIDFromHex(
+		c.Params("id"),
+	)
+
+	// the provided ID might be invalid ObjectID
+	if err != nil {
+		return nil, c.SendStatus(400)
+	}
+
+	// find and delete the employee with the given ID
+	query := bson.D{{Key: "_id", Value: employeeID}}
+	deleteOneOrder, err := repo.OrderRepo.DeleteOneOrder(c, query)
+	if err != nil {
+		return nil, c.SendStatus(500)
+	}
+
+	// the employee might not exist
+	if deleteOneOrder.DeletedCount < 1 {
+		return nil, c.SendStatus(404)
+	}
+	return deleteOneOrder, nil
 }
